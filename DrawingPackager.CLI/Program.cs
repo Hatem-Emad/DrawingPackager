@@ -1,10 +1,13 @@
-﻿namespace DrawingPackager.CLI
+using DrawingPackager.SolidEdge;
+
+namespace DrawingPackager.CLI
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            var session = SolidEdgeSession.AttachOrStart();
+            Console.WriteLine($"Solid Edge is running. Visible: {session.Visible}");
         }
     }
 }
