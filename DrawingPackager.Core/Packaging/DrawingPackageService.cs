@@ -38,6 +38,9 @@ public sealed class DrawingPackageService
         {
             messages.Add($"Inspecting drawing: {request.DrawingPath}");
             var drawingInfo = await _automationService.InspectAsync(request.DrawingPath, cancellationToken);
+            messages.Add($"Drawing number: {Display(drawingInfo.DrawingNumber)}");
+            messages.Add($"Revision: {Display(drawingInfo.Revision)}");
+            messages.Add($"Title: {Display(drawingInfo.Title)}");
 
             var packageName = PackageNameBuilder.Build(drawingInfo);
             var packageFolder = EnsureUniquePackageFolder(request.OutputRoot, packageName);
@@ -82,6 +85,7 @@ public sealed class DrawingPackageService
                 drawingInfo.DrawingNumber,
                 drawingInfo.Revision,
                 drawingInfo.Title,
+                drawingInfo.Properties,
                 packageFiles,
                 drawingInfo.ReferencedDocuments,
                 messages);
@@ -173,6 +177,22 @@ public sealed class DrawingPackageService
         builder.AppendLine($"- Revision: `{Display(manifest.Revision)}`");
         builder.AppendLine($"- Title: `{Display(manifest.Title)}`");
         builder.AppendLine($"- Created: `{manifest.CreatedAt:O}`");
+        builder.AppendLine();
+        builder.AppendLine("## Properties");
+        builder.AppendLine();
+
+        if (manifest.Properties.Count == 0)
+        {
+            builder.AppendLine("- None detected.");
+        }
+        else
+        {
+            foreach (var property in manifest.Properties.OrderBy(property => property.Key, StringComparer.OrdinalIgnoreCase))
+            {
+                builder.AppendLine($"- {property.Key}: `{property.Value}`");
+            }
+        }
+
         builder.AppendLine();
         builder.AppendLine("## Files");
         builder.AppendLine();

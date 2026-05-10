@@ -14,7 +14,18 @@ public sealed class DrawingPackageServiceTests
         await File.WriteAllTextAsync(drawingPath, "draft");
 
         var automation = new FakeDrawingAutomationService(
-            new DrawingInfo(drawingPath, "A100", "B", "Bracket", Array.Empty<string>()));
+            new DrawingInfo(
+                drawingPath,
+                "A100",
+                "B",
+                "Bracket",
+                new Dictionary<string, string>
+                {
+                    ["Document Number"] = "A100",
+                    ["Revision"] = "B",
+                    ["Title"] = "Bracket"
+                },
+                Array.Empty<string>()));
 
         var service = new DrawingPackageService(automation, new FixedDateTimeProvider());
 
@@ -31,6 +42,8 @@ public sealed class DrawingPackageServiceTests
         Assert.True(File.Exists(Path.Combine(result.PackageFolder, "manifest.json")));
         Assert.True(File.Exists(Path.Combine(result.PackageFolder, "report.md")));
         Assert.Contains(result.CreatedFiles, path => path.EndsWith("manifest.json"));
+        Assert.Equal("Bracket", result.Manifest?.Title);
+        Assert.Equal("B", result.Manifest?.Properties["Revision"]);
     }
 
     [Fact]
@@ -41,7 +54,7 @@ public sealed class DrawingPackageServiceTests
         await File.WriteAllTextAsync(partPath, "part");
 
         var service = new DrawingPackageService(
-            new FakeDrawingAutomationService(new DrawingInfo(partPath, "", "", "", Array.Empty<string>())),
+            new FakeDrawingAutomationService(EmptyDrawingInfo(partPath)),
             new FixedDateTimeProvider());
 
         var result = await service.PackageAsync(new PackageRequest(
@@ -64,7 +77,19 @@ public sealed class DrawingPackageServiceTests
         await File.WriteAllTextAsync(drawingPath, "draft");
 
         var service = new DrawingPackageService(
-            new FakeDrawingAutomationService(new DrawingInfo(drawingPath, "A100", "B", "Bracket", Array.Empty<string>())),
+            new FakeDrawingAutomationService(
+                new DrawingInfo(
+                    drawingPath,
+                    "A100",
+                    "B",
+                    "Bracket",
+                    new Dictionary<string, string>
+                    {
+                        ["Document Number"] = "A100",
+                        ["Revision"] = "B",
+                        ["Title"] = "Bracket"
+                    },
+                    Array.Empty<string>())),
             new FixedDateTimeProvider());
 
         var result = await service.PackageAsync(new PackageRequest(
@@ -76,11 +101,55 @@ public sealed class DrawingPackageServiceTests
         Assert.EndsWith("A100_RevB_Package_2", result.PackageFolder);
     }
 
+    [Fact]
+    public async Task PackageAsync_adds_metadata_messages_to_result()
+    {
+        var workspace = CreateWorkspace();
+        var drawingPath = Path.Combine(workspace, "A100.dft");
+        await File.WriteAllTextAsync(drawingPath, "draft");
+
+        var service = new DrawingPackageService(
+            new FakeDrawingAutomationService(
+                new DrawingInfo(
+                    drawingPath,
+                    "A100",
+                    "B",
+                    "Bracket",
+                    new Dictionary<string, string>
+                    {
+                        ["Document Number"] = "A100",
+                        ["Revision"] = "B",
+                        ["Title"] = "Bracket"
+                    },
+                    Array.Empty<string>())),
+            new FixedDateTimeProvider());
+
+        var result = await service.PackageAsync(new PackageRequest(
+            drawingPath,
+            Path.Combine(workspace, "Packages"),
+            PackageOptions.Default));
+
+        Assert.Contains("Drawing number: A100", result.Messages);
+        Assert.Contains("Revision: B", result.Messages);
+        Assert.Contains("Title: Bracket", result.Messages);
+    }
+
     private static string CreateWorkspace()
     {
         var workspace = Path.Combine(Path.GetTempPath(), "DrawingPackager.Tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(workspace);
         return workspace;
+    }
+
+    private static DrawingInfo EmptyDrawingInfo(string drawingPath)
+    {
+        return new DrawingInfo(
+            drawingPath,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            new Dictionary<string, string>(),
+            Array.Empty<string>());
     }
 
     private sealed class FixedDateTimeProvider : IDateTimeProvider

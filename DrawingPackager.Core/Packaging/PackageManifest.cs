@@ -7,6 +7,7 @@ public sealed record PackageManifest(
     string DrawingNumber,
     string Revision,
     string Title,
+    IReadOnlyDictionary<string, string> Properties,
     IReadOnlyList<PackageFile> Files,
     IReadOnlyList<string> ReferencedDocuments,
     IReadOnlyList<string> Messages);

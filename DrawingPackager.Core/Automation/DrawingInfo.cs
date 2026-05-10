@@ -5,4 +5,5 @@ public sealed record DrawingInfo(
     string DrawingNumber,
     string Revision,
     string Title,
+    IReadOnlyDictionary<string, string> Properties,
     IReadOnlyList<string> ReferencedDocuments);

@@ -4,6 +4,7 @@ namespace DrawingPackager.SolidEdge;
 
 public sealed class SolidEdgeDrawingAutomationService : IDrawingAutomationService
 {
+    private readonly SolidEdgePropertyReader _propertyReader = new();
     private readonly Func<SolidEdgeSession> _sessionFactory;
 
     public SolidEdgeDrawingAutomationService()
@@ -20,12 +21,27 @@ public sealed class SolidEdgeDrawingAutomationService : IDrawingAutomationServic
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        return Task.FromResult(new DrawingInfo(
-            drawingPath,
-            Path.GetFileNameWithoutExtension(drawingPath),
-            string.Empty,
-            string.Empty,
-            Array.Empty<string>()));
+        var session = _sessionFactory();
+        dynamic documents = session.Application.Documents;
+        dynamic document = documents.Open(drawingPath);
+
+        try
+        {
+            DrawingInfo drawingInfo = _propertyReader.Read(document, drawingPath);
+            if (!string.IsNullOrWhiteSpace(drawingInfo.DrawingNumber))
+            {
+                return Task.FromResult(drawingInfo);
+            }
+
+            return Task.FromResult(drawingInfo with
+            {
+                DrawingNumber = Path.GetFileNameWithoutExtension(drawingPath)
+            });
+        }
+        finally
+        {
+            document.Close(false);
+        }
     }
 
     public Task<ExportedDrawing> ExportPdfAsync(
