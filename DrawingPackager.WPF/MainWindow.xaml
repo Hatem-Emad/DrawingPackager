@@ -3,30 +3,78 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DrawingPackager.WPF"
         mc:Ignorable="d"
-        Title="Drawing Packager" Height="260" Width="460"
+        Title="Drawing Packager" Height="430" Width="720"
+        MinHeight="390" MinWidth="640"
         WindowStartupLocation="CenterScreen">
     <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="16" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="96" />
+        </Grid.ColumnDefinitions>
 
-        <TextBlock FontSize="22" FontWeight="SemiBold" Text="Drawing Packager" />
+        <TextBlock Grid.ColumnSpan="3"
+                   FontSize="24"
+                   FontWeight="SemiBold"
+                   Text="Drawing Packager" />
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <Button Width="140" Height="34" Click="ConnectButton_Click" Content="Connect" />
-            <Button Width="140" Height="34" Margin="12,0,0,0" Click="StartButton_Click" Content="Start Solid Edge" />
+        <TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Drawing" />
+        <TextBox x:Name="DrawingPathTextBox"
+                 Grid.Row="2"
+                 Grid.Column="1"
+                 MinHeight="30"
+                 VerticalContentAlignment="Center" />
+        <Button Grid.Row="2"
+                Grid.Column="2"
+                Margin="8,0,0,0"
+                Click="BrowseDrawingButton_Click"
+                Content="Browse" />
+
+        <TextBlock Grid.Row="4" VerticalAlignment="Center" Text="Output" />
+        <TextBox x:Name="OutputFolderTextBox"
+                 Grid.Row="4"
+                 Grid.Column="1"
+                 MinHeight="30"
+                 VerticalContentAlignment="Center" />
+        <Button Grid.Row="4"
+                Grid.Column="2"
+                Margin="8,0,0,0"
+                Click="BrowseOutputButton_Click"
+                Content="Browse" />
+
+        <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal">
+            <CheckBox x:Name="ExportPdfCheckBox" IsChecked="True" Content="Export PDF" />
+            <CheckBox x:Name="CopyDrawingCheckBox" Margin="20,0,0,0" IsChecked="True" Content="Copy source drawing" />
         </StackPanel>
 
-        <TextBlock x:Name="StatusText"
-                   Grid.Row="4"
-                   TextWrapping="Wrap"
-                   VerticalAlignment="Top"
-                   Text="Solid Edge is not connected." />
+        <TextBox x:Name="LogTextBox"
+                 Grid.Row="8"
+                 Grid.ColumnSpan="3"
+                 AcceptsReturn="True"
+                 IsReadOnly="True"
+                 TextWrapping="Wrap"
+                 VerticalScrollBarVisibility="Auto" />
+
+        <StackPanel Grid.Row="10" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="PackageButton"
+                    Width="120"
+                    Height="34"
+                    Click="PackageButton_Click"
+                    Content="Package" />
+        </StackPanel>
     </Grid>
 </Window>

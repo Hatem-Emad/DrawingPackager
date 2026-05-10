@@ -1,39 +1,80 @@
+using DrawingPackager.Core.Packaging;
 using DrawingPackager.SolidEdge;
+using Microsoft.Win32;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
+using Forms = System.Windows.Forms;
 
 namespace DrawingPackager.WPF
 {
     public partial class MainWindow : Window
     {
-        private SolidEdgeSession? _session;
-
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void ConnectButton_Click(object sender, RoutedEventArgs e)
+        private void BrowseDrawingButton_Click(object sender, RoutedEventArgs e)
         {
-            TryConnect(() => SolidEdgeSession.AttachToRunning());
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Solid Edge Draft (*.dft)|*.dft|All files (*.*)|*.*"
+            };
+
+            if (dialog.ShowDialog(this) == true)
+            {
+                DrawingPathTextBox.Text = dialog.FileName;
+            }
         }
 
-        private void StartButton_Click(object sender, RoutedEventArgs e)
+        private void BrowseOutputButton_Click(object sender, RoutedEventArgs e)
         {
-            TryConnect(() => SolidEdgeSession.AttachOrStart());
+            using var dialog = new Forms.FolderBrowserDialog
+            {
+                Description = "Select the package output folder"
+            };
+
+            if (dialog.ShowDialog() == Forms.DialogResult.OK)
+            {
+                OutputFolderTextBox.Text = dialog.SelectedPath;
+            }
         }
 
-        private void TryConnect(Func<SolidEdgeSession> connect)
+        private async void PackageButton_Click(object sender, RoutedEventArgs e)
         {
+            PackageButton.IsEnabled = false;
+            LogTextBox.Text = "Starting package..." + Environment.NewLine;
+
             try
             {
-                _session = connect();
-                StatusText.Text = $"Connected to Solid Edge. Visible: {_session.Visible}";
+                var result = await PackageAsync();
+                LogTextBox.Text = string.Join(Environment.NewLine, result.Messages);
+
+                if (result.PackageFolder is not null)
+                {
+                    LogTextBox.AppendText(Environment.NewLine + $"Package folder: {result.PackageFolder}");
+                }
             }
-            catch (Exception ex)
+            finally
             {
-                StatusText.Text = ex.Message;
+                PackageButton.IsEnabled = true;
             }
+        }
+
+        private Task<PackageResult> PackageAsync()
+        {
+            var request = new PackageRequest(
+                DrawingPathTextBox.Text,
+                OutputFolderTextBox.Text,
+                new PackageOptions
+                {
+                    ExportPdf = ExportPdfCheckBox.IsChecked == true,
+                    CopySourceDrawing = CopyDrawingCheckBox.IsChecked == true
+                });
+
+            var service = new DrawingPackageService(new SolidEdgeDrawingAutomationService());
+            return service.PackageAsync(request);
         }
     }
 }

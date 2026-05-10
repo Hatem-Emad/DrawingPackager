@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawingPackager.CLI", "Draw
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawingPackager.WPF", "DrawingPackager.WPF\DrawingPackager.WPF.csproj", "{2279297D-4852-4557-83A5-990AB742F818}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawingPackager.Core", "DrawingPackager.Core\DrawingPackager.Core.csproj", "{7442FF0D-C98E-486C-B8E9-773DBBB33256}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawingPackager.Tests", "DrawingPackager.Tests\DrawingPackager.Tests.csproj", "{1627D54D-27D6-44E6-B1AE-FD756E796B53}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{2279297D-4852-4557-83A5-990AB742F818}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2279297D-4852-4557-83A5-990AB742F818}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2279297D-4852-4557-83A5-990AB742F818}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7442FF0D-C98E-486C-B8E9-773DBBB33256}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7442FF0D-C98E-486C-B8E9-773DBBB33256}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7442FF0D-C98E-486C-B8E9-773DBBB33256}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7442FF0D-C98E-486C-B8E9-773DBBB33256}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1627D54D-27D6-44E6-B1AE-FD756E796B53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1627D54D-27D6-44E6-B1AE-FD756E796B53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1627D54D-27D6-44E6-B1AE-FD756E796B53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1627D54D-27D6-44E6-B1AE-FD756E796B53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
